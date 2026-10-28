@@ -1,5 +1,8 @@
 import express from "express";
-import {cargarFactura, eliminarFactura, modificarFactura, obtenerFacturaId, obtenerListaFacturas, resumenFacturacion } from "./handlers/facturas.js";
+import {cargarFactura, eliminarFactura, modificarFactura, obtenerFacturaId,
+  obtenerListaFacturas, resumenFacturacion } from "./handlers/facturas.js";
+import {aceptacionArchivo} from "./middleware/validacionArchivo.js"  
+
 
 const app = express();
 
@@ -12,7 +15,7 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
-app.post("/api/facturas", cargarFactura);
+app.post("/api/facturas", aceptacionArchivo, cargarFactura);
 app.get("/api/facturas", obtenerListaFacturas);
 app.get("/api/facturas/:id", obtenerFacturaId);
 app.put("/api/facturas/:id", modificarFactura);

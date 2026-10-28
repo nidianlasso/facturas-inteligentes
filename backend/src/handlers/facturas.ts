@@ -1,9 +1,21 @@
 import { Request, Response } from "express";
+import multer from "multer";
+
 
 export const cargarFactura = async(req:Request, res: Response) =>{
     try{
+        const factura = req.file;
+        console.log("esto llega de la factura" + factura);
+        if (!factura) {
+            return res.status(400).json({
+                mensaje: "No se recibió un archivo válido"
+            });
+        }
         return res.status(200).json({
             message: "cargar facturas",
+            archivo: factura?.originalname,
+            tamano: factura?.size,
+            extension: factura.mimetype
         });
     }catch (error) {
         console.error("Error al cargar la factura:", error);
