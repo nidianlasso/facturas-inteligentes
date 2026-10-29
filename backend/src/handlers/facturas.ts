@@ -1,16 +1,21 @@
 import { Request, Response } from "express";
 import multer from "multer";
+import {uploadFile} from "../llm/gemini.js"
 
 
 export const cargarFactura = async(req:Request, res: Response) =>{
     try{
         const factura = req.file;
-        console.log("esto llega de la factura" + factura);
+        console.log("recibe la factura");
         if (!factura) {
             return res.status(400).json({
                 mensaje: "No se recibió un archivo válido"
             });
         }
+        const archivoCargado = await uploadFile(factura);
+        console.log("llegada del api carga gemini");
+        console.log(archivoCargado.file.uri);
+        
         return res.status(200).json({
             message: "cargar facturas",
             archivo: factura?.originalname,

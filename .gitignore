@@ -150,3 +150,6 @@ vite.config.ts.timestamp-*
 
 #dist
 dist/
+
+#VARIABLES DE ENTORNO
+.env
