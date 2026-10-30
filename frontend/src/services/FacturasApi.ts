@@ -16,9 +16,25 @@ export interface RespuestaFactura {
   };
 }
 
-export const cargarFacturaApi = async (
-  factura: File
-): Promise<RespuestaFactura> => {
+export interface Factura{
+  id_factura: number;
+  numero_factura: string | null;
+  proveedor: string;
+  fecha_emision: string | null;
+  fecha_limite_pago: string | null;
+  pago_total: number | null;
+  moneda: string | null;
+  numero_cliente: string | null;
+  nit: string | null;
+  documento: string | null;
+}
+export interface RespuestaListaFacturas {
+  mensaje: string;
+  total: number;
+  facturas: Factura[];
+}
+
+export const cargarFacturaApi = async (factura: File): Promise<RespuestaFactura> => {
   const formData = new FormData();
 
   formData.append("factura", factura);
@@ -29,7 +45,7 @@ export const cargarFacturaApi = async (
   });
 
   console.log("Respuesta recibida:", respuesta);
-console.log("Estado HTTP:", respuesta.status);
+  console.log("Estado HTTP:", respuesta.status);
   const resultado = await respuesta.json();
   console.log("Datos recibidos por React:", resultado);
 
@@ -41,3 +57,15 @@ console.log("Estado HTTP:", respuesta.status);
 
   return resultado;
 };
+
+export const listaFacturasApi = async (): Promise<RespuestaListaFacturas> =>{
+  const listaFactura = await fetch(`${API_URL}/facturas`);
+  const resultadoListado = await listaFactura.json();
+
+  if (!listaFactura.ok) {
+    throw new Error(
+      resultadoListado.mensaje || "Error al consultas las facturas"
+    );
+  }
+  return resultadoListado;
+} 

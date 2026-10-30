@@ -1,7 +1,9 @@
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import type { ChangeEvent, DragEvent } from "react";
-import { cargarFacturaApi } from "../services/FacturasApi";
+import { cargarFacturaApi,  listaFacturasApi,  type Factura } from "../services/FacturasApi";
+
+
 
 function Factura() {
   const [facturaSeleccionada, setFacturaSeleccionada] = useState<File | null>(null);
@@ -9,6 +11,10 @@ function Factura() {
   const [cargando, setCargando] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const inputArchivo = useRef<HTMLInputElement>(null);
+  const [facturas, setFacturas] = useState<Factura[]>([]);
+  const [cargandoFacturas, setCargandoFacturas] = useState(false);
+  const [errorFacturas, setErrorFacturas] = useState("");
+  // const [errorCargaFacturas, setErrorCargaFacturas] = useState(" ");
 
   const cargarFactura = (factura?: File) => {
     if (!factura) return;
@@ -49,6 +55,7 @@ function Factura() {
 
     try {
       await cargarFacturaApi(facturaSeleccionada);
+      await obtenerFacturas();
 
       setProgreso(100);
       setMensaje("¡Factura procesada correctamente!");
@@ -63,6 +70,28 @@ function Factura() {
       setCargando(false);
     }
   };
+  const obtenerFacturas = async () => {
+    try {
+      setCargandoFacturas(true);
+      setErrorFacturas("");
+
+      const resultado = await listaFacturasApi();
+
+      setFacturas(resultado.facturas);
+
+    } catch (error) {
+      setErrorFacturas(
+        error instanceof Error
+          ? error.message
+          : "Error al consultar las facturas."
+      );
+    } finally {
+      setCargandoFacturas(false);
+    }
+  };
+  useEffect(() => {
+    obtenerFacturas();
+  }, []);
 
   return (
     <main className="container py-5">
@@ -137,6 +166,94 @@ function Factura() {
           </section>
         </div>
       </div>
+      
+      <section className="mt-5">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h2 className="h5 fw-bold mb-0">Facturas registradas</h2>
+          <span className="text-secondary small">
+            {facturas.length} facturas
+          </span>
+        </div>
+
+        <div className="card shadow-sm">
+          <div className="table-responsive">
+            <table className="table table-hover align-middle mb-0">
+              <thead className="table-light">
+                <tr>
+                  <th>Número</th>
+                  <th>Proveedor</th>
+                  <th>Emisión</th>
+                  <th>Vencimiento</th>
+                  <th className="text-end">Valor</th>
+                  <th>Documento</th>
+                  <th className="text-center">Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {cargandoFacturas ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-4">
+                      Cargando facturas...
+                    </td>
+                  </tr>
+                ) : errorFacturas ? (
+                  <tr>
+                    <td colSpan={7} className="text-center text-danger py-4">
+                      {errorFacturas}
+                    </td>
+                  </tr>
+                ) : facturas.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-4">
+                      No hay facturas registradas.
+                    </td>
+                  </tr>
+                ) : (
+                  facturas.map((factura) => (
+                    <tr key={factura.id_factura}>
+                      <td>{factura.numero_factura || "—"}</td>
+
+                      <td>{factura.proveedor}</td>
+
+                      <td>{factura.fecha_emision || "—"}</td>
+
+                      <td>{factura.fecha_limite_pago || "—"}</td>
+
+                      <td className="text-end">
+                        {factura.pago_total !== null
+                          ? new Intl.NumberFormat("es-CO", {
+                              style: "currency",
+                              currency: factura.moneda || "COP",
+                            }).format(factura.pago_total)
+                          : "—"}
+                      </td>
+
+                      <td>{factura.documento || "—"}</td>
+
+                      <td>
+                        <div className="d-flex justify-content-center gap-2">
+                          <button type="button" className="btn btn-sm btn-outline-primary" title="Previsualizar factura">
+                            👁️
+                          </button>
+                          <button type="button" className="btn btn-sm btn-outline-warning" title="Editar factura">
+                            ✏️
+                          </button>
+
+                          <button type="button" className="btn btn-sm btn-outline-danger" title="Eliminar factura">
+                            🗑️
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
     </main>
   );
 }
