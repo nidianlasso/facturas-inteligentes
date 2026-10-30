@@ -69,3 +69,14 @@ export const listaFacturasApi = async (): Promise<RespuestaListaFacturas> =>{
   }
   return resultadoListado;
 } 
+
+export const buscarFacturaPorIdApi = async (id: number) => {
+  const buscarFactura = await fetch(`${API_URL}/facturas/${id}`);
+  const facturaBuscada = await buscarFactura.json();
+  if (!buscarFactura.ok) {
+    throw new Error(
+      facturaBuscada.mensaje || "No se encontró la factura."
+    );
+  }
+  return facturaBuscada.factura;
+};

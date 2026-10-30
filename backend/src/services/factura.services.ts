@@ -74,7 +74,7 @@ export function obtenerFacturas() {
 
 export function obtenerFacturaPorId(id: number) {
   return db.prepare(`SELECT f.id_factura, f.numero_factura, f.fecha_emision, f.fecha_limite_pago, f.pago_total, f.moneda, f.numero_cliente, p.nombre AS proveedor, p.nit, d.id_documento, d.nombre AS documento, d.tipo AS tipo_documento, d.tamano, d.fecha_carga, d.respuesta_llm, d.nombre_original, d.nombre_defecto 
-    FROM factura f INNER JOIN proveedor p ON f.id_proveedor = p.id_proveedorLEFT JOIN documento d ON f.id_factura = d.factura_id WHERE f.id_factura = ?`)
+    FROM factura f INNER JOIN proveedor p ON f.id_proveedor = p.id_proveedor LEFT JOIN documento d ON f.id_factura = d.factura_id WHERE f.id_factura = ?`)
     .get(id);
 }
 

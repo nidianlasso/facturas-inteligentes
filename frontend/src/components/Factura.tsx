@@ -1,7 +1,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import type { ChangeEvent, DragEvent } from "react";
-import { cargarFacturaApi,  listaFacturasApi,  type Factura } from "../services/FacturasApi";
+import { cargarFacturaApi,  listaFacturasApi, buscarFacturaPorIdApi, type Factura } from "../services/FacturasApi";
 
 
 
@@ -14,7 +14,7 @@ function Factura() {
   const [facturas, setFacturas] = useState<Factura[]>([]);
   const [cargandoFacturas, setCargandoFacturas] = useState(false);
   const [errorFacturas, setErrorFacturas] = useState("");
-  // const [errorCargaFacturas, setErrorCargaFacturas] = useState(" ");
+  const [idBusqueda, setIdBusqueda] = useState("");
 
   const cargarFactura = (factura?: File) => {
     if (!factura) return;
@@ -92,6 +92,34 @@ function Factura() {
   useEffect(() => {
     obtenerFacturas();
   }, []);
+  const buscarFactura = async () => {
+    const id = Number(idBusqueda);
+
+    if (!idBusqueda.trim()) {
+      setErrorFacturas("Ingresa el ID de la factura que deseas buscar.");
+      return;
+    }
+    if (!Number.isInteger(id) || id <= 0) {
+      setErrorFacturas("Ingresa un ID válido.");
+      return;
+    }
+    try {
+      setCargandoFacturas(true);
+      setErrorFacturas("");
+      const facturaConsultada = await buscarFacturaPorIdApi(id);
+      setFacturas([facturaConsultada]);
+    } catch (error) {
+      setFacturas([]);
+
+      setErrorFacturas(
+        error instanceof Error
+          ? error.message
+          : "Error al buscar la factura."
+      );
+    } finally {
+      setCargandoFacturas(false);
+    }
+};
 
   return (
     <main className="container py-5">
@@ -170,16 +198,32 @@ function Factura() {
       <section className="mt-5">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h2 className="h5 fw-bold mb-0">Facturas registradas</h2>
-          <span className="text-secondary small">
-            {facturas.length} facturas
-          </span>
         </div>
-
+        <div className="row mb-3">
+          <div className="col-12 col-md-6 col-lg-5">
+            <div className="input-group">
+              <input id="buscarFactura" type="number" min="1" className="form-control"
+                placeholder="Buscar factura por id" value={idBusqueda}
+                onChange={(e) => setIdBusqueda(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    buscarFactura();
+                  }
+                }}/>
+              <button type="button" className="btn btn-primary" onClick={buscarFactura}
+                disabled={cargandoFacturas}>
+                <i className="bi bi-search me-1"></i>
+                Buscar
+              </button>
+            </div>
+        </div>
+        </div>
         <div className="card shadow-sm">
           <div className="table-responsive">
             <table className="table table-hover align-middle mb-0">
               <thead className="table-light">
                 <tr>
+                  <th>ID</th>
                   <th>Número</th>
                   <th>Proveedor</th>
                   <th>Emisión</th>
@@ -189,48 +233,43 @@ function Factura() {
                   <th className="text-center">Acciones</th>
                 </tr>
               </thead>
-
               <tbody>
                 {cargandoFacturas ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-4">
+                    <td colSpan={8} className="text-center py-4">
                       Cargando facturas...
                     </td>
                   </tr>
                 ) : errorFacturas ? (
                   <tr>
-                    <td colSpan={7} className="text-center text-danger py-4">
+                    <td colSpan={8} className="text-center text-danger py-4">
                       {errorFacturas}
                     </td>
                   </tr>
                 ) : facturas.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-4">
-                      No hay facturas registradas.
+                    <td colSpan={8} className="text-center py-4">
+                    {idBusqueda.trim() ? "No se encontró ninguna factura con ese ID." : "No hay facturas registradas."}
                     </td>
                   </tr>
                 ) : (
                   facturas.map((factura) => (
                     <tr key={factura.id_factura}>
+                      <td>{factura.id_factura}</td>
                       <td>{factura.numero_factura || "—"}</td>
-
                       <td>{factura.proveedor}</td>
-
                       <td>{factura.fecha_emision || "—"}</td>
-
                       <td>{factura.fecha_limite_pago || "—"}</td>
-
                       <td className="text-end">
                         {factura.pago_total !== null
                           ? new Intl.NumberFormat("es-CO", {
-                              style: "currency",
-                              currency: factura.moneda || "COP",
-                            }).format(factura.pago_total)
-                          : "—"}
+                          style: "currency",
+                          currency: factura.moneda || "COP",
+                          }).format(factura.pago_total)
+                          : "—"
+                        }
                       </td>
-
                       <td>{factura.documento || "—"}</td>
-
                       <td>
                         <div className="d-flex justify-content-center gap-2">
                           <button type="button" className="btn btn-sm btn-outline-primary" title="Previsualizar factura">
@@ -239,7 +278,6 @@ function Factura() {
                           <button type="button" className="btn btn-sm btn-outline-warning" title="Editar factura">
                             ✏️
                           </button>
-
                           <button type="button" className="btn btn-sm btn-outline-danger" title="Eliminar factura">
                             🗑️
                           </button>
@@ -253,7 +291,6 @@ function Factura() {
           </div>
         </div>
       </section>
-
     </main>
   );
 }
