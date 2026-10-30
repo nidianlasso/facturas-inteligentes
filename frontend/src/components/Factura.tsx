@@ -1,7 +1,8 @@
 
 import { useRef, useState, useEffect } from "react";
 import type { ChangeEvent, DragEvent } from "react";
-import { cargarFacturaApi,  listaFacturasApi, buscarFacturaPorIdApi, type Factura } from "../services/FacturasApi";
+import { cargarFacturaApi,  listaFacturasApi, buscarFacturaPorIdApi,
+    eliminarFacturaApi, type Factura } from "../services/FacturasApi";
 
 
 
@@ -119,7 +120,36 @@ function Factura() {
     } finally {
       setCargandoFacturas(false);
     }
-};
+  };
+  const eliminarFactura = async (id: number) => {
+  const confirmar = window.confirm(
+    `¿Estás segura de que deseas eliminar la factura con ID ${id}?`
+  );
+  if (!confirmar) return;
+    try {
+      setCargandoFacturas(true);
+      setErrorFacturas("");
+
+      await eliminarFacturaApi(id);
+      setFacturas((facturasActuales) =>
+        facturasActuales.filter(
+          (factura) => factura.id_factura !== id
+        )
+      );
+      if (Number(idBusqueda) === id) {
+        setIdBusqueda("");
+      }
+      setMensaje("Factura eliminada correctamente.");
+    } catch (error) {
+      setErrorFacturas(
+        error instanceof Error
+          ? error.message
+          : "Error al eliminar la factura."
+      );
+    } finally {
+      setCargandoFacturas(false);
+    }
+  };
 
   return (
     <main className="container py-5">
@@ -278,7 +308,8 @@ function Factura() {
                           <button type="button" className="btn btn-sm btn-outline-warning" title="Editar factura">
                             ✏️
                           </button>
-                          <button type="button" className="btn btn-sm btn-outline-danger" title="Eliminar factura">
+                          <button type="button" className="btn btn-sm btn-outline-danger" title="Eliminar factura"
+                              disabled= {cargandoFacturas} onClick={() => eliminarFactura(factura.id_factura)}>
                             🗑️
                           </button>
                         </div>

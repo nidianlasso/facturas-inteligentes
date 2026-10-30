@@ -80,3 +80,16 @@ export const buscarFacturaPorIdApi = async (id: number) => {
   }
   return facturaBuscada.factura;
 };
+
+export const eliminarFacturaApi = async (id: number) => {
+  const respuesta = await fetch(`${API_URL}/facturas/${id}`, {
+    method: "DELETE",
+  });
+  const resultado = await respuesta.json();
+  if (!respuesta.ok) {
+    throw new Error(
+      resultado.mensaje || "No se pudo eliminar la factura."
+    );
+  }
+  return resultado;
+};
