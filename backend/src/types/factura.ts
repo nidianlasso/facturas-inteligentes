@@ -1,5 +1,5 @@
 export interface Factura {
-    numero_factura: number;
+    numero_factura: string;
     fecha_emision: string;
     fecha_limite_pago: string;
     pago_total: number;

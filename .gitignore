@@ -153,3 +153,4 @@ dist/
 
 #VARIABLES DE ENTORNO
 .env
+frontend/
