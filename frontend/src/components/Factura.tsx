@@ -321,9 +321,6 @@ function Factura() {
                       <td>{factura.documento || "—"}</td>
                       <td>
                         <div className="d-flex justify-content-center gap-2">
-                          <button type="button" className="btn btn-sm btn-outline-primary" title="Previsualizar factura">
-                            👁️
-                          </button>
                           <button type="button" className="btn btn-sm btn-outline-warning" title="Editar factura"
                               onClick={() => {navigate(`/facturas/${factura.id_factura}/editar`)}}>
                             ✏️

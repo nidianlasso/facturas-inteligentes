@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { resumenFacturasApi, type ResumenFactura} from "../services/FacturasApi";
 
