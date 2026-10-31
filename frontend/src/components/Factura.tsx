@@ -246,7 +246,7 @@ function Factura() {
           <div className="col-6 col-md-3 col-lg-3">
             <div className="input-group">
               <input id="buscarFactura" type="number" min="1" className="form-control"
-                placeholder="Buscar factura por id" value={idBusqueda}
+                placeholder="Id factura" value={idBusqueda}
                 onChange={(e) => setIdBusqueda(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {

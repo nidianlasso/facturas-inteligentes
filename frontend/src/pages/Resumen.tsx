@@ -6,6 +6,7 @@ function Resumen() {
     const [resumen, setResumen] = useState<ResumenFactura[]>([]);
      const [cargando, setCargando] = useState(true);
      const [error, setError] = useState("");
+     const navigate = useNavigate();
     useEffect (() =>{
         const cargarResumen = async () => {
             try {
@@ -27,8 +28,10 @@ function Resumen() {
     }, [])
   return (
     <main className="container py-5">
+        <button type="button" className="btn btn-outline-primary" onClick={() => {navigate(`/`)}} style={{marginRight:20}}>Volver</button>
       <h1>Resumen de Facturas</h1>
       <section>
+        
         <div className="card shadow-sm">
           <div className="table-responsive">
             <table className="table table-hover align-middle mb-0">
