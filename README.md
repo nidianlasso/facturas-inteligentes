@@ -65,13 +65,6 @@ npm run dev
 
 Este comando iniciará el proyecto tanto frontEnd como backEnd en modo desarrollo.
 
-### Paso 6. Inicializar la base de datos
-
-Con el proyecto en ejecución, abre tu navegador e ingresa a la siguiente dirección:
-
-http://localhost:3000/init
-
-Esta ruta permite realizar la inicialización de la base de datos SQLite, preparando la estructura necesaria para el funcionamiento del sistema.
 
 Base de datos: SQLite
 Para este proyecto se decidió utilizar SQLite debido a su facilidad de instalación, configuración y mantenimiento.
