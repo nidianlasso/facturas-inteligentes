@@ -10,12 +10,14 @@ interface DatosDocumento {
   nombreDefecto: string;
 }
 export interface DatosActualizarFactura {
-  numero_factura: string | null;
+  numero_factura: string;
+  proveedor: string;
+  nit: string | null;
   fecha_emision: string | null;
-  fecha_limite_pago: string | null;
-  pago_total: number | null;
-  moneda: string | null;
-  numero_cliente: string | null;
+  fecha_limite_pago: string;
+  pago_total: number;
+  moneda: string;
+  numero_cliente: string;
 }
 
 export function guardarFactura(datos: DatosFacturaGemini, documento: DatosDocumento): number {
@@ -79,16 +81,23 @@ export function obtenerFacturaPorId(id: number) {
 }
 
 export function actualizarFactura(id: number, datos: DatosActualizarFactura) {
-  return db.prepare(`UPDATE factura SET numero_factura = ?, fecha_emision = ?, fecha_limite_pago = ?, pago_total = ?,moneda = ?, numero_cliente = ? WHERE id_factura = ?`)
-  .run(
-    datos.numero_factura,
-    datos.fecha_emision,
-    datos.fecha_limite_pago,
-    datos.pago_total,
-    datos.moneda,
-    datos.numero_cliente,
-    id
-  );
+  const actualizar = db.transaction(() => {
+    const factura = db.prepare(`UPDATE factura SET numero_factura = ?, fecha_emision = ?, fecha_limite_pago = ?, pago_total = ?, moneda = ?, numero_cliente = ?
+      WHERE id_factura = ?`)
+      .run(datos.numero_factura, datos.fecha_emision, datos.fecha_limite_pago, datos.pago_total, datos.moneda, datos.numero_cliente, id
+    );
+
+    if (factura.changes === 0) {
+      throw new Error("No se encontró la factura.");
+    }
+    db.prepare(`UPDATE proveedor SET nombre = ?, nit = ? WHERE id_proveedor = (SELECT id_proveedor FROM factura WHERE id_factura = ?)`)
+    .run(datos.proveedor, datos.nit, id
+    );
+
+    return factura;
+  });
+
+  return actualizar();
 }
 export function eliminarFacturaBD(id: number) {
   const transaccion = db.transaction(() => {

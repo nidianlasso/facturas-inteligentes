@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { buscarFacturaPorIdApi, type Factura as TipoFactura} from "../services/FacturasApi";
+import { useNavigate, useParams } from "react-router-dom";
+import { actualizarFacturaApi, buscarFacturaPorIdApi, type ActualizarFactura, type Factura as TipoFactura} from "../services/FacturasApi";
 import { useForm, type SubmitHandler } from "react-hook-form";
 
 
@@ -11,6 +11,7 @@ function EditarFactura() {
     const [errorFacturas, setErrorFacturas] = useState("");
     const [cargandoFacturas, setCargandoFacturas] = useState(false);
     const { id } = useParams();
+    const navigate = useNavigate();
 
 //   console.log("ID recibido al editar:", id);
 
@@ -47,11 +48,38 @@ function EditarFactura() {
         setCargandoFacturas(false);
       }
     };
-    const onSubmit: SubmitHandler<TipoFactura> = (data) => {
-      console.log("Datos del formulario enviados:", data);
+    const onSubmit: SubmitHandler<TipoFactura> = async (data) => {
+      try{
+        const datosActualizados: ActualizarFactura = {
+          numero_factura: data.numero_factura,
+          proveedor: data.proveedor,
+          nit: data.nit,
+          fecha_emision: data.fecha_emision,
+          fecha_limite_pago: data.fecha_limite_pago,
+          pago_total: data.pago_total,
+          moneda: data.moneda,
+          numero_cliente: data.numero_cliente,
+        };
+        await actualizarFacturaApi(Number(id), datosActualizados);
+        navigate("/");
+      }catch (error) {
+        setErrorFacturas(
+          error instanceof Error
+            ? error.message
+            : "Error al actualizar la factura."
+        );
+      }
     };
   return (
      <div className="form-container"> 
+     {mensaje && 
+     <p>{mensaje}</p>}
+     { cargandoFacturas && 
+     <p>Cargando...</p>
+     }
+     {errorFacturas &&
+      <p>{errorFacturas}</p>
+     }
       <form className="formulario" onSubmit={handleSubmit(onSubmit)}>
         <h2>Editar Factura</h2>
         <br></br>

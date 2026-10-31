@@ -81,41 +81,52 @@ export const obtenerFacturaId = async(req:Request, res: Response) =>{
     }
 }
 
-export const modificarFactura = async(req:Request, res: Response) =>{
-    try{
-        const idLlegada = Number(req.params.id)
-        if(!Number.isInteger(idLlegada) || idLlegada<=0){
-            return res.status(400).json({
-                message: "El ID de la factura no es válido"
-            })
-        }
-        console.log("Este es el id que llega " +idLlegada);
-        const facturaGuardada = obtenerFacturaPorId(idLlegada);
-        if (!facturaGuardada) {
-            return res.status(404).json({
-                mensaje: "Factura no encontrada"
-            });
-        }
-        const {numero_factura, fecha_emision, fecha_limite_pago, pago_total, moneda, numero_cliente} = req.body;
-        if (pago_total !== undefined && pago_total !== null && (typeof pago_total !== "number" || !Number.isFinite(pago_total) || pago_total < 0)){
-            return res.status(400).json({
-                mensaje: "El valor total debe ser un número válido y no negativo"
-            });
-        }
+export const modificarFactura = async (req: Request, res: Response) => {
+  try {
+    const idLlegada = Number(req.params.id);
 
-        const resultado = actualizarFactura(idLlegada, {numero_factura,fecha_emision,fecha_limite_pago,pago_total,moneda,numero_cliente});
-
-        return res.status(200).json({
-            message: "Factura Actualizada",
-            cambios: resultado.changes
-        });
-    }catch (error) {
-        console.error("Error al obtener la factura:", error);
-        return res.status(500).json({
-            mensaje: "Error interno del servidor"
-        });
+    if (!Number.isInteger(idLlegada) || idLlegada <= 0) {
+      return res.status(400).json({
+        mensaje: "El ID de la factura no es válido"
+      });
     }
-}
+
+    const facturaGuardada = obtenerFacturaPorId(idLlegada);
+
+    if (!facturaGuardada) {
+      return res.status(404).json({
+        mensaje: "Factura no encontrada"
+      });
+    }
+
+    const {numero_factura, proveedor, nit, fecha_emision, fecha_limite_pago, pago_total, moneda, numero_cliente} = req.body;
+    if (
+      pago_total !== undefined &&
+      pago_total !== null &&
+      (typeof pago_total !== "number" ||
+        !Number.isFinite(pago_total) ||
+        pago_total < 0)
+    ) {
+      return res.status(400).json({
+        mensaje: "El valor total debe ser un número válido y no negativo"
+      });
+    }
+
+    const resultado = actualizarFactura(idLlegada, { numero_factura, proveedor, nit, fecha_emision, fecha_limite_pago, pago_total, moneda, numero_cliente});
+
+    return res.status(200).json({
+      mensaje: "Factura actualizada",
+      cambios: resultado.changes
+    });
+
+  } catch (error) {
+    console.error("Error al actualizar la factura:", error);
+
+    return res.status(500).json({
+      mensaje: "Error interno del servidor"
+    });
+  }
+};
 export const eliminarFactura = async(req:Request, res: Response) =>{
     try{
         const idLlegada = Number(req.params.id)
