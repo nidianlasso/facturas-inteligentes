@@ -81,7 +81,6 @@ function Factura() {
       const resultado = await listaFacturasApi(paginaActual);
 
       setFacturas(resultado.facturas);
-      return resultado.facturas.length;
 
     } catch (error) {
       setErrorFacturas(
@@ -244,7 +243,7 @@ function Factura() {
           <h2 className="h5 fw-bold mb-0">Facturas registradas</h2>
         </div>
         <div className="row mb-3">
-          <div className="col-12 col-md-6 col-lg-5">
+          <div className="col-6 col-md-3 col-lg-3">
             <div className="input-group">
               <input id="buscarFactura" type="number" min="1" className="form-control"
                 placeholder="Buscar factura por id" value={idBusqueda}
@@ -256,11 +255,17 @@ function Factura() {
                 }}/>
               <button type="button" className="btn btn-primary" onClick={buscarFactura}
                 disabled={cargandoFacturas}>
-                <i className="bi bi-search me-1"></i>
                 Buscar
               </button>
-            </div>
+          </div>
         </div>
+        <div className="col-6 col-md-3 col-lg-3">
+              <div className="input-group">
+                <button type="button" className="btn btn-primary" onClick={() => {navigate(`/facturas/reportes/resumen`)}}>
+                    Resumen
+                </button>
+              </div>
+            </div>
         </div>
         <div className="card shadow-sm">
           <div className="table-responsive">

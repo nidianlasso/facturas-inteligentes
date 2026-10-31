@@ -45,7 +45,17 @@ export type ActualizarFactura = Pick<
   | "moneda"
   | "numero_cliente"
 >;
-
+export interface ResumenFactura {
+  proveedor: string;
+  periodo: string;
+  moneda: string;
+  cantidad_facturas: number;
+  total_facturado: number;
+}
+export interface RespuestaResumenFacturas {
+  mensaje: string;
+  resumen: ResumenFactura[];
+}
 
 
 export const cargarFacturaApi = async (factura: File): Promise<RespuestaFactura> => {
@@ -126,3 +136,14 @@ export const actualizarFacturaApi = async (id: number, datos: ActualizarFactura)
   }
   return resultado;
 };
+
+export const resumenFacturasApi = async () => {
+  const respuestaFactura = await fetch(`${API_URL}/facturas/reportes/resumen`);
+  const resultado: RespuestaResumenFacturas  = await respuestaFactura.json();
+  if (!respuestaFactura.ok) {
+    throw new Error(
+      resultado.mensaje || "No se pudo generar el resumen."
+    );
+  }
+  return resultado;
+}

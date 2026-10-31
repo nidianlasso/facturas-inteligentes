@@ -4,6 +4,7 @@ import "./assets/style.css";
 import './App.css';
 import Factura from "./components/Factura";
 import EditarFactura from "./pages/EditarFactura";
+import Resumen from "./pages/Resumen";
 
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Factura />} />
         <Route path="/facturas/:id/editar" element={<EditarFactura />} />
+        <Route path="/facturas/reportes/resumen" element={<Resumen />} />
       </Routes>
   </BrowserRouter>)
 }
