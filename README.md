@@ -32,16 +32,20 @@ Sigue los siguientes pasos para instalar y ejecutar el proyecto localmente.
 
 Abre una terminal y ejecuta el siguiente comando:
 
-bash
+```bash
 git clone https://github.com/nidianlasso/facturas-inteligentes.git
+```
 
 ### Paso 2. Ingresar a la carpeta del proyecto
+```bash
 cd facturas-inteligentes
+```
 
 ### Paso 3. Instalar las dependencias
 Ejecuta el siguiente comando para instalar todas las dependencias necesarias:
+```bash
 npm install
-
+```
 ### Paso 4. Configurar las variables de entorno
 Dentro de la carpeta backend, crea un archivo llamado .env
 Agrega la siguiente variable de entorno:
@@ -55,7 +59,9 @@ API_KEY_GEMINI=valor_enviado_al_correo
 ### Paso 5. Inicializar el proyecto
 
 Una vez instaladas las dependencias y configurada la variable de entorno, ejecuta:
+```bash
 npm run dev
+```
 
 Este comando iniciará el proyecto tanto frontEnd como backEnd en modo desarrollo.
 
