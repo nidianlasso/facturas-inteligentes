@@ -18,21 +18,35 @@ export interface RespuestaFactura {
 
 export interface Factura{
   id_factura: number;
-  numero_factura: string | null;
+  numero_factura: string;
   proveedor: string;
   fecha_emision: string | null;
-  fecha_limite_pago: string | null;
-  pago_total: number | null;
-  moneda: string | null;
-  numero_cliente: string | null;
+  fecha_limite_pago: string;
+  pago_total: number;
+  moneda: string;
+  numero_cliente: string;
   nit: string | null;
-  documento: string | null;
+  documento: string;
 }
 export interface RespuestaListaFacturas {
   mensaje: string;
   total: number;
   facturas: Factura[];
 }
+
+export type ActualizarFactura = Pick<
+  Factura,
+  | "numero_factura"
+  | "proveedor"
+  | "nit"
+  | "fecha_emision"
+  | "fecha_limite_pago"
+  | "pago_total"
+  | "moneda"
+  | "numero_cliente"
+>;
+
+
 
 export const cargarFacturaApi = async (factura: File): Promise<RespuestaFactura> => {
   const formData = new FormData();
@@ -89,6 +103,25 @@ export const eliminarFacturaApi = async (id: number) => {
   if (!respuesta.ok) {
     throw new Error(
       resultado.mensaje || "No se pudo eliminar la factura."
+    );
+  }
+  return resultado;
+};
+
+export const actualizarFacturaApi = async (id: number, datos: ActualizarFactura) => {
+  const respuesta = await fetch(`${API_URL}/facturas/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(datos),
+  });
+
+  const resultado = await respuesta.json();
+
+  if (!respuesta.ok) {
+    throw new Error(
+      resultado.mensaje || "No se pudo actualizar la factura."
     );
   }
   return resultado;

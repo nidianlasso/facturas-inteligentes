@@ -2,7 +2,8 @@
 import { useRef, useState, useEffect } from "react";
 import type { ChangeEvent, DragEvent } from "react";
 import { cargarFacturaApi,  listaFacturasApi, buscarFacturaPorIdApi,
-    eliminarFacturaApi, type Factura } from "../services/FacturasApi";
+    eliminarFacturaApi, type Factura as TipoFactura} from "../services/FacturasApi";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -12,11 +13,11 @@ function Factura() {
   const [cargando, setCargando] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const inputArchivo = useRef<HTMLInputElement>(null);
-  const [facturas, setFacturas] = useState<Factura[]>([]);
+  const [facturas, setFacturas] = useState<TipoFactura[]>([]);
   const [cargandoFacturas, setCargandoFacturas] = useState(false);
   const [errorFacturas, setErrorFacturas] = useState("");
   const [idBusqueda, setIdBusqueda] = useState("");
-
+  const navigate = useNavigate();
   const cargarFactura = (factura?: File) => {
     if (!factura) return;
     const tiposPermitidos = ["application/pdf", "image/png", "image/jpeg",];
@@ -305,7 +306,8 @@ function Factura() {
                           <button type="button" className="btn btn-sm btn-outline-primary" title="Previsualizar factura">
                             👁️
                           </button>
-                          <button type="button" className="btn btn-sm btn-outline-warning" title="Editar factura">
+                          <button type="button" className="btn btn-sm btn-outline-warning" title="Editar factura"
+                              onClick={() => {navigate(`/facturas/${factura.id_factura}/editar`)}}>
                             ✏️
                           </button>
                           <button type="button" className="btn btn-sm btn-outline-danger" title="Eliminar factura"
