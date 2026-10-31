@@ -46,10 +46,22 @@ Ejecuta el siguiente comando para instalar todas las dependencias necesarias:
 ```bash
 npm install
 ```
-### Paso 4. Configurar las variables de entorno
-Dentro de la carpeta backend, crea un archivo llamado .env
-Agrega la siguiente variable de entorno:
+### Paso 3.1. Error de instalación
+En caso de fallar la instación cuando se ejecuta el paso 3 se deben ejecutar los siguientes comandos:
+```bash
+cd frontend
+npm install
+cd ..
+cd backend
+npm install better-sqlite3
+npm install
+cd ..
+npm install
+```
 
+### Paso 4. Configurar las variables de entorno
+Dentro de la carpeta backend, carga el archivo enviado al correo .env o crea un archivo nuevo y
+Agrega la siguiente variable de entorno:
 .env
 API_KEY_GEMINI=valor_enviado_al_correo
 
@@ -89,3 +101,4 @@ Base de datos	SQLite	Persistencia
 
 ### Durante la función eliminar actualmente se quita el registro de la base de datos pero queda el archivo guardado en /backend/uploads/, sin embargo no se debería hacer esta práctica
 ### para lo cual lo correcto sería agregarle un estado a la factura y cuando se "elimine" la factura cambie de estado.
+### Detro de la carpeta docs/ se encuentran agregadas 2 facturas para realizar las pruebas junto con el diagrama de base de datos.
