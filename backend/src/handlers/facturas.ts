@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {analisisFacturaIa, uploadFile} from "../llm/gemini.js"
 import { actualizarFactura, eliminarFacturaBD, guardarFactura, obtenerFacturaPorId, obtenerFacturas, obtenerResumen } from "../services/factura.services.js";
+import console from "node:console";
 
 export const cargarFactura = async(req:Request, res: Response) =>{
     try{
@@ -42,7 +43,8 @@ export const cargarFactura = async(req:Request, res: Response) =>{
 
 export const obtenerListaFacturas = async(req:Request, res: Response) =>{
     try{
-        const facturas = obtenerFacturas();
+        const {page} = req.query;
+        const facturas = obtenerFacturas(Number(page));
         return res.status(200).json({
             message: "Listado de facturas exitoso",
             total: facturas.length, facturas
@@ -60,7 +62,7 @@ export const obtenerFacturaId = async(req:Request, res: Response) =>{
         if(!Number.isInteger(idLlegada) || idLlegada<=0){
             return res.status(400).json({
                 message: "El ID de la factura no es válido"
-            })
+            });
         }
         console.log("Este es el id que llega " +idLlegada);
         const factura = obtenerFacturaPorId(idLlegada);
@@ -157,7 +159,9 @@ export const eliminarFactura = async(req:Request, res: Response) =>{
 }
 export const resumenFacturacion = async(req:Request, res: Response) =>{
     try{
+        
         const resumen = obtenerResumen();
+        
         return res.status(200).json({
             message: "Detalle de facturación",
             total: resumen.length,

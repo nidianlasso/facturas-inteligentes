@@ -72,8 +72,8 @@ export const cargarFacturaApi = async (factura: File): Promise<RespuestaFactura>
   return resultado;
 };
 
-export const listaFacturasApi = async (): Promise<RespuestaListaFacturas> =>{
-  const listaFactura = await fetch(`${API_URL}/facturas`);
+export const listaFacturasApi = async (page:Number): Promise<RespuestaListaFacturas> =>{
+  const listaFactura = await fetch(`${API_URL}/facturas?page=${page}`);
   const resultadoListado = await listaFactura.json();
 
   if (!listaFactura.ok) {

@@ -26,8 +26,8 @@ export function guardarFactura(datos: DatosFacturaGemini, documento: DatosDocume
     let proveedor = db.prepare(`SELECT id_proveedor, nit FROM proveedor WHERE nombre = ? COLLATE NOCASE`)
         .get(nombreProveedor) as | { id_proveedor: number; nit: string | null } | undefined;
     if (!proveedor) {
-      const resultado = db.prepare(`INSERT INTO proveedor (nombre, nit) VALUES (?, ?)`)
-      .run(nombreProveedor, datos.nit);
+      const resultado = db.prepare(`INSERT INTO proveedor (nombre, nit, tipo) VALUES (?, ?, ?)`)
+      .run(nombreProveedor, datos.nit, datos.tipo);
       proveedor = {
         id_proveedor: Number(resultado.lastInsertRowid),
         nit:datos.nit,
@@ -66,11 +66,11 @@ export function guardarFactura(datos: DatosFacturaGemini, documento: DatosDocume
   return transaccion();
 }
 
-export function obtenerFacturas() {
+export function obtenerFacturas(page:Number) {
   const facturas = db.prepare(`SELECT f.id_factura, f.numero_factura, f.fecha_emision, f.fecha_limite_pago, f.pago_total, f.moneda,
      f.numero_cliente, p.nombre AS proveedor, p.nit, d.nombre AS documento, d.fecha_carga FROM factura f 
      INNER JOIN proveedor p ON f.id_proveedor = p.id_proveedor LEFT JOIN documento d ON f.id_factura = d.factura_id 
-     ORDER BY f.id_factura DESC`).all();
+     ORDER BY f.id_factura DESC LIMIT 3 OFFSET ?`).all(page);
   return facturas;
 }
 
@@ -91,8 +91,7 @@ export function actualizarFactura(id: number, datos: DatosActualizarFactura) {
       throw new Error("No se encontró la factura.");
     }
     db.prepare(`UPDATE proveedor SET nombre = ?, nit = ? WHERE id_proveedor = (SELECT id_proveedor FROM factura WHERE id_factura = ?)`)
-    .run(datos.proveedor, datos.nit, id
-    );
+    .run(datos.proveedor, datos.nit, id);
 
     return factura;
   });

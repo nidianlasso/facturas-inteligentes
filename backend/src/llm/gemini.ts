@@ -11,6 +11,7 @@ export interface DatosFacturaGemini {
   numero_factura: string | null;
   fecha_limite_pago: string | null;
   numero_cliente_contrato: string | null;
+  tipo: string | null;
 }
 export async function uploadFile(file: Express.Multer.File) {
   if (!apiKey) {
@@ -58,7 +59,8 @@ export async function analisisFacturaIa(fileUri: string, mimeType: string) {
               "proveedor_emisor": "string o null",
               "numero_factura": "string o null",
               "fecha_limite_pago": "YYYY-MM-DD o null",
-              "numero_cliente_contrato": "string o null"
+              "numero_cliente_contrato": "string o null",
+              "tipo": "string o null"
             }
             REGLAS DE EXTRACCIÓN:
             1. Identifica los conceptos por su significado y contexto, no solamente por el nombre de las etiquetas.
@@ -111,7 +113,8 @@ export async function analisisFacturaIa(fileUri: string, mimeType: string) {
             13. Todos los campos deben respetar los tipos definidos en el JSON. Los campos de texto deben ser strings o 
                 null, y valor_total debe ser un número o null.
             14. No agregues campos adicionales. Devuelve únicamente el objeto JSON solicitado, válido y sin texto fuera 
-                de él.`;
+                de él.
+            15. Identifica si la factura correponde a una empresa pública, privada y almacena los valores "público" ó "privado" en la variable tipo`;
     
     const response = await fetch(apiGemini,{
       method: "POST",

@@ -18,6 +18,7 @@ function Factura() {
   const [errorFacturas, setErrorFacturas] = useState("");
   const [idBusqueda, setIdBusqueda] = useState("");
   const navigate = useNavigate();
+  const [page, setPage] = useState(0);
   const cargarFactura = (factura?: File) => {
     if (!factura) return;
     const tiposPermitidos = ["application/pdf", "image/png", "image/jpeg",];
@@ -57,7 +58,7 @@ function Factura() {
 
     try {
       await cargarFacturaApi(facturaSeleccionada);
-      await obtenerFacturas();
+      await obtenerFacturas(0);
 
       setProgreso(100);
       setMensaje("¡Factura procesada correctamente!");
@@ -72,14 +73,15 @@ function Factura() {
       setCargando(false);
     }
   };
-  const obtenerFacturas = async () => {
+  const obtenerFacturas = async (paginaActual:Number) => {
     try {
       setCargandoFacturas(true);
       setErrorFacturas("");
 
-      const resultado = await listaFacturasApi();
+      const resultado = await listaFacturasApi(paginaActual);
 
       setFacturas(resultado.facturas);
+      return resultado.facturas.length;
 
     } catch (error) {
       setErrorFacturas(
@@ -91,8 +93,19 @@ function Factura() {
       setCargandoFacturas(false);
     }
   };
+  const paginacionSiguiente = () =>{
+    setPage(page + 1);
+    obtenerFacturas(page + 1);
+  }
+  const paginacionAnterior = () =>{
+    if (page > 0){
+      setPage(page - 1);
+      obtenerFacturas(page - 1);
+    }
+  }
+
   useEffect(() => {
-    obtenerFacturas();
+    obtenerFacturas(0);
   }, []);
   const buscarFactura = async () => {
     const id = Number(idBusqueda);
@@ -322,6 +335,13 @@ function Factura() {
               </tbody>
             </table>
           </div>
+          <div className="row">
+            <div className="">
+              <button type="button" className="btn btn-outline-primary" onClick={paginacionAnterior} style={{marginRight:20}}>Anterior</button>
+              <button type="button" className="btn btn-outline-primary" onClick={paginacionSiguiente}>Siguiente</button>
+            </div>
+          </div>
+          
         </div>
       </section>
     </main>
